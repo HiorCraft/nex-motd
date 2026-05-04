@@ -14,7 +14,8 @@
       "Bash(python3 *)",
       "PowerShell(head *)",
       "PowerShell($jarPath = \"C:\\\\Users\\\\Liamf\\\\.gradle\\\\caches\\\\modules-2\\\\files-2.1\\\\com.velocitypowered\\\\velocity-api\\\\3.5.0-SNAPSHOT\\\\ae3d9d65cf1795d9e715465d434a92b630bc2c8c\\\\velocity-api-3.5.0-SNAPSHOT-sources.jar\"; Add-Type -Assembly System.IO.Compression.FileSystem; $zip = [System.IO.Compression.ZipFile]::OpenRead\\($jarPath\\); $zip.Entries | Select-Object FullName | Sort-Object FullName | Select-Object -First 50)",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "PowerShell(Add-Type -Assembly System.IO.Compression.FileSystem; $zip = [System.IO.Compression.ZipFile]::OpenRead\\(\"C:\\\\Users\\\\Liamf\\\\.gradle\\\\caches\\\\modules-2\\\\files-2.1\\\\dev.slne.surf.api\\\\surf-api-core\\\\3.9.3\\\\8bde5dc47dea81f093a176005ad1c32ac751f024\\\\surf-api-core-3.9.3-sources.jar\"\\); $zip.Entries | Select-Object FullName | Format-List; $zip.Dispose\\(\\))"
     ]
   }
 }

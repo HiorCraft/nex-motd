@@ -14,7 +14,7 @@ class MotdCommand : SimpleCommand {
         val args = invocation.arguments()
 
         if (args.isEmpty()) {
-            source.sendMessage(mm.deserialize("<gray>/motd set <white><profil> <dark_gray>| <gray>/motd list <dark_gray>| <gray>/motd get"))
+            source.sendMessage(mm.deserialize("<gray>/motd set <white><profil> <dark_gray>| <gray>/motd list <dark_gray>| <gray>/motd get <dark_gray>| <gray>/motd reload"))
             return
         }
 
@@ -43,6 +43,10 @@ class MotdCommand : SimpleCommand {
             "get" -> {
                 source.sendMessage(mm.deserialize("<gray>Aktives Profil: <white>${MotdConfig.getConfig().activeProfile}"))
             }
+            "reload" -> {
+                MotdConfig.reloadFromFile()
+                source.sendMessage(mm.deserialize("<green>Konfiguration erfolgreich neu geladen."))
+            }
             else -> source.sendMessage(mm.deserialize("<red>Unbekannter Unterbefehl."))
         }
     }
@@ -53,7 +57,7 @@ class MotdCommand : SimpleCommand {
     override fun suggest(invocation: SimpleCommand.Invocation): List<String> {
         val args = invocation.arguments()
         return when {
-            args.size <= 1 -> listOf("set", "list", "get")
+            args.size <= 1 -> listOf("set", "list", "get", "reload")
                 .filter { it.startsWith(args.getOrElse(0) { "" }, ignoreCase = true) }
             args.size == 2 && args[0].equals("set", ignoreCase = true) ->
                 MotdService.getProfiles().keys

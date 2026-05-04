@@ -19,7 +19,7 @@ class MotdCommand : Command("motd", "Verwalte das MOTD", "/motd", listOf("nexmot
         }
 
         if (args.isEmpty()) {
-            sender.sendMessage(mm.deserialize("<gray>/motd set <white><profil> <dark_gray>| <gray>/motd list <dark_gray>| <gray>/motd get"))
+            sender.sendMessage(mm.deserialize("<gray>/motd set <white><profil> <dark_gray>| <gray>/motd list <dark_gray>| <gray>/motd get <dark_gray>| <gray>/motd reload"))
             return true
         }
 
@@ -55,6 +55,10 @@ class MotdCommand : Command("motd", "Verwalte das MOTD", "/motd", listOf("nexmot
             "get" -> {
                 sender.sendMessage(mm.deserialize("<gray>Aktives Profil: <white>${MotdConfig.getConfig().activeProfile}"))
             }
+            "reload" -> {
+                MotdConfig.reloadFromFile()
+                sender.sendMessage(mm.deserialize("<green>Konfiguration erfolgreich neu geladen."))
+            }
             else -> sender.sendMessage(mm.deserialize("<red>Unbekannter Unterbefehl."))
         }
         return true
@@ -63,7 +67,7 @@ class MotdCommand : Command("motd", "Verwalte das MOTD", "/motd", listOf("nexmot
     override fun tabComplete(sender: CommandSender, alias: String, args: Array<String>): MutableList<String> {
         if (!sender.hasPermission("nexmotd.admin")) return mutableListOf()
         return when {
-            args.size <= 1 -> mutableListOf("set", "list", "get")
+            args.size <= 1 -> mutableListOf("set", "list", "get", "reload")
                 .filter { it.startsWith(args.getOrElse(0) { "" }, ignoreCase = true) }
                 .toMutableList()
             args.size == 2 && args[0].equals("set", ignoreCase = true) ->
