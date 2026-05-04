@@ -6,8 +6,6 @@ plugins {
 
 surfPaperPluginApi {
     mainClass("dev.hiorcraft.nex.motd.paper.NexMotdPaperPlugin")
-    withSurfRedis()
-
     serverDependencies {
         registerRequired("LuckPerms")
         registerRequired("MiniPlaceholders")

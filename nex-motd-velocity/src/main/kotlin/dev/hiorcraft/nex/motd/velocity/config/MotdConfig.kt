@@ -1,6 +1,7 @@
 package dev.hiorcraft.nex.motd.velocity.config
 
 import dev.hiorcraft.nex.motd.api.MotdProfile
+import dev.hiorcraft.nex.motd.api.MotdVariant
 import dev.hiorcraft.nex.motd.velocity.plugin
 import dev.slne.surf.api.core.config.SpongeYmlConfigClass
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
@@ -10,15 +11,25 @@ data class MotdConfig(
     var activeProfile: String = "default",
     var profiles: MutableMap<String, MotdProfile> = mutableMapOf(
         "default" to MotdProfile(
-            firstLine = "<gradient:#f7b733:#fc4a1a><b>NEX-NETWORK</b></gradient>",
-            secondLine = "<gray>» <white>Spielen</white> <dark_gray>•</dark_gray> <white>Erkunden</white> <dark_gray>•</dark_gray> <white>Erleben</white> «",
             versionString = "✦ 1.21.11",
-            maxPlayers = -1
+            maxPlayers = -1,
+            variants = mutableListOf(
+                MotdVariant(
+                    firstLine = "               <gradient:#55FF55:#1a5c1a><b>Hexoria</b></gradient>",
+                    secondLine = "<dark_gray>        » <green>Erkunde</green> <dark_gray>•</dark_gray> <green>Kämpfe</green> <dark_gray>•</dark_gray> <green>Herrsche</green> <dark_gray>«"
+                ),
+                MotdVariant(
+                    firstLine = "         <gradient:#1a5c1a:#55FF55><b>✦ Hexoria ✦</b></gradient>",
+                    secondLine = "            <dark_green>✦ <green>Dein nächstes Abenteuer wartet<dark_green>... ✦"
+                )
+            )
         ),
         "maintenance" to MotdProfile(
             firstLine = "<red><b>NEX-NETWORK</b></red> <dark_gray>- <red><b>Wartungsarbeiten</b></red>",
             secondLine = "<gray>Wir sind gleich zurück. Schau im Discord vorbei!",
-            versionString = "⚙ Wartung"
+            versionString = "⚙ Wartung",
+            blockJoins = true,
+            kickMessage = "<red>Der Server befindet sich aktuell in Wartung. Komm später wieder!"
         ),
         "event" to MotdProfile(
             firstLine = "<gradient:#FFD700:#FF8C00>✦ NEX-NETWORK EVENT ✦</gradient>",
