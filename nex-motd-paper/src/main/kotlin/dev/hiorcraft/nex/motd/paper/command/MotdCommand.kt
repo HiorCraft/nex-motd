@@ -3,78 +3,88 @@ package dev.hiorcraft.nex.motd.paper.command
 import dev.hiorcraft.nex.motd.paper.config.MotdConfig
 import dev.hiorcraft.nex.motd.paper.plugin
 import dev.hiorcraft.nex.motd.paper.service.MotdService
-import net.kyori.adventure.text.minimessage.MiniMessage
+import dev.hiorcraft.nex.motd.paper.utils.PermissionRegistry
+import dev.jorel.commandapi.arguments.ArgumentSuggestions
+import dev.jorel.commandapi.arguments.StringArgument
+import dev.jorel.commandapi.kotlindsl.anyExecutor
+import dev.jorel.commandapi.kotlindsl.argument
+import dev.jorel.commandapi.kotlindsl.commandTree
+import dev.jorel.commandapi.kotlindsl.literalArgument
+import dev.slne.surf.api.core.messages.adventure.sendText
 import org.bukkit.Bukkit
-import org.bukkit.command.Command
-import org.bukkit.command.CommandSender
 
-class MotdCommand : Command("motd", "Verwalte das MOTD", "/motd", listOf("nexmotd")) {
+fun motdCommand() = commandTree("motd") {
+    withAliases("nexmotd")
+    withPermission(PermissionRegistry.COMMAND_MOTD)
 
-    private val mm = MiniMessage.miniMessage()
-
-    override fun execute(sender: CommandSender, commandLabel: String, args: Array<String>): Boolean {
-        if (!sender.hasPermission("nexmotd.admin")) {
-            sender.sendMessage(mm.deserialize("<red>Keine Berechtigung."))
-            return true
+    anyExecutor { executor, _ ->
+        executor.sendText {
+            secondary("/motd set <profil> | /motd list | /motd get | /motd reload")
         }
-
-        if (args.isEmpty()) {
-            sender.sendMessage(mm.deserialize("<gray>/motd set <white><profil> <dark_gray>| <gray>/motd list <dark_gray>| <gray>/motd get <dark_gray>| <gray>/motd reload"))
-            return true
-        }
-
-        when (args[0].lowercase()) {
-            "set" -> {
-                if (args.size < 2) {
-                    sender.sendMessage(mm.deserialize("<red>Verwendung: /motd set <profil>"))
-                    return true
-                }
-                val name = args[1]
-                if (name !in MotdService.getProfiles()) {
-                    sender.sendMessage(mm.deserialize("<red>Unbekanntes Profil: <white>$name"))
-                    return true
-                }
-                MotdService.setActiveProfile(name)
-                sender.sendMessage(mm.deserialize("<green>MOTD-Profil gesetzt auf <white>$name<green>."))
-                val player = Bukkit.getOnlinePlayers().firstOrNull()
-                if (player != null) {
-                    player.sendPluginMessage(plugin, "nexmotd:profile", name.toByteArray(Charsets.UTF_8))
-                    sender.sendMessage(mm.deserialize("<gray>Velocity-Profil ebenfalls synchronisiert."))
-                } else {
-                    sender.sendMessage(mm.deserialize("<yellow>Warnung: Kein Spieler online – Velocity konnte nicht synchronisiert werden."))
-                }
-            }
-            "list" -> {
-                val active = MotdConfig.getConfig().activeProfile
-                sender.sendMessage(mm.deserialize("<gray>Verfügbare Profile:"))
-                MotdService.getProfiles().keys.forEach { name ->
-                    val marker = if (name == active) "<green>✔" else "<dark_gray>○"
-                    sender.sendMessage(mm.deserialize("  $marker <white>$name"))
-                }
-            }
-            "get" -> {
-                sender.sendMessage(mm.deserialize("<gray>Aktives Profil: <white>${MotdConfig.getConfig().activeProfile}"))
-            }
-            "reload" -> {
-                MotdConfig.reloadFromFile()
-                sender.sendMessage(mm.deserialize("<green>Konfiguration erfolgreich neu geladen."))
-            }
-            else -> sender.sendMessage(mm.deserialize("<red>Unbekannter Unterbefehl."))
-        }
-        return true
     }
 
-    override fun tabComplete(sender: CommandSender, alias: String, args: Array<String>): MutableList<String> {
-        if (!sender.hasPermission("nexmotd.admin")) return mutableListOf()
-        return when {
-            args.size <= 1 -> mutableListOf("set", "list", "get", "reload")
-                .filter { it.startsWith(args.getOrElse(0) { "" }, ignoreCase = true) }
-                .toMutableList()
-            args.size == 2 && args[0].equals("set", ignoreCase = true) ->
-                MotdService.getProfiles().keys
-                    .filter { it.startsWith(args[1], ignoreCase = true) }
-                    .toMutableList()
-            else -> mutableListOf()
+    literalArgument("set") {
+        argument(StringArgument("profile").replaceSuggestions(ArgumentSuggestions.strings {
+            MotdService.getProfiles().keys.toTypedArray()
+        })) {
+            anyExecutor { executor, args ->
+                val name = args[0] as String
+                if (name !in MotdService.getProfiles()) {
+                    executor.sendText {
+                        appendErrorPrefix()
+                        error("Unbekanntes Profil: ")
+                        primary(name)
+                    }
+                    return@anyExecutor
+                }
+                MotdService.setActiveProfile(name)
+                val player = Bukkit.getOnlinePlayers().firstOrNull()
+                player?.sendPluginMessage(plugin, "nexmotd:profile", name.toByteArray(Charsets.UTF_8))
+                executor.sendText {
+                    appendSuccessPrefix()
+                    success("MOTD-Profil gesetzt auf ")
+                    primary(name)
+                }
+                if (player == null) {
+                    executor.sendText {
+                        appendWarningPrefix()
+                        warning("Kein Spieler online – Velocity konnte nicht synchronisiert werden.")
+                    }
+                }
+            }
+        }
+    }
+
+    literalArgument("list") {
+        anyExecutor { executor, _ ->
+            val active = MotdConfig.getConfig().activeProfile
+            executor.sendText { secondary("Verfügbare Profile:") }
+            MotdService.getProfiles().keys.forEach { name ->
+                if (name == active) {
+                    executor.sendText { success("  ✔ $name") }
+                } else {
+                    executor.sendText { secondary("  ○ $name") }
+                }
+            }
+        }
+    }
+
+    literalArgument("get") {
+        anyExecutor { executor, _ ->
+            executor.sendText {
+                secondary("Aktives Profil: ")
+                primary(MotdConfig.getConfig().activeProfile)
+            }
+        }
+    }
+
+    literalArgument("reload") {
+        anyExecutor { executor, _ ->
+            MotdConfig.reloadFromFile()
+            executor.sendText {
+                appendSuccessPrefix()
+                success("Konfiguration erfolgreich neu geladen.")
+            }
         }
     }
 }

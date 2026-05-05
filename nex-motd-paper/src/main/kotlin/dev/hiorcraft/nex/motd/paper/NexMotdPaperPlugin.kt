@@ -1,7 +1,7 @@
 package dev.hiorcraft.nex.motd.paper
 
 import dev.hiorcraft.nex.motd.api.NexMotdApi
-import dev.hiorcraft.nex.motd.paper.command.MotdCommand
+import dev.hiorcraft.nex.motd.paper.command.motdCommand
 import dev.hiorcraft.nex.motd.paper.listener.ServerListPingListener
 import dev.hiorcraft.nex.motd.paper.service.MotdService
 import org.bukkit.plugin.java.JavaPlugin
@@ -15,7 +15,7 @@ class NexMotdPaperPlugin : JavaPlugin() {
         instance = this
         NexMotdApi.profileManager = MotdService
         server.pluginManager.registerEvents(ServerListPingListener, this)
-        server.commandMap.register("nexmotd", MotdCommand())
+        motdCommand().register()
         server.messenger.registerOutgoingPluginChannel(this, "nexmotd:profile")
     }
 

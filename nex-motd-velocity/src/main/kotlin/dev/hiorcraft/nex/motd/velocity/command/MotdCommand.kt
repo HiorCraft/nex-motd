@@ -3,56 +3,80 @@ package dev.hiorcraft.nex.motd.velocity.command
 import com.velocitypowered.api.command.SimpleCommand
 import dev.hiorcraft.nex.motd.velocity.config.MotdConfig
 import dev.hiorcraft.nex.motd.velocity.service.MotdService
-import net.kyori.adventure.text.minimessage.MiniMessage
+import dev.hiorcraft.nex.motd.velocity.utils.PermissionRegistry
+import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
 class MotdCommand : SimpleCommand {
-
-    private val mm = MiniMessage.miniMessage()
 
     override fun execute(invocation: SimpleCommand.Invocation) {
         val source = invocation.source()
         val args = invocation.arguments()
 
         if (args.isEmpty()) {
-            source.sendMessage(mm.deserialize("<gray>/motd set <white><profil> <dark_gray>| <gray>/motd list <dark_gray>| <gray>/motd get <dark_gray>| <gray>/motd reload"))
+            source.sendText {
+                secondary("/motd set <profil> | /motd list | /motd get | /motd reload")
+            }
             return
         }
 
         when (args[0].lowercase()) {
             "set" -> {
                 if (args.size < 2) {
-                    source.sendMessage(mm.deserialize("<red>Verwendung: /motd set <profil>"))
+                    source.sendText {
+                        appendErrorPrefix()
+                        error("Verwendung: /motd set <profil>")
+                    }
                     return
                 }
                 val name = args[1]
                 if (name !in MotdService.getProfiles()) {
-                    source.sendMessage(mm.deserialize("<red>Unbekanntes Profil: <white>$name"))
+                    source.sendText {
+                        appendErrorPrefix()
+                        error("Unbekanntes Profil: ")
+                        primary(name)
+                    }
                     return
                 }
                 MotdService.setActiveProfile(name)
-                source.sendMessage(mm.deserialize("<green>MOTD-Profil gesetzt auf <white>$name<green>."))
+                source.sendText {
+                    appendSuccessPrefix()
+                    success("MOTD-Profil gesetzt auf ")
+                    primary(name)
+                }
             }
             "list" -> {
                 val active = MotdConfig.getConfig().activeProfile
-                source.sendMessage(mm.deserialize("<gray>Verfügbare Profile:"))
+                source.sendText { secondary("Verfügbare Profile:") }
                 MotdService.getProfiles().keys.forEach { name ->
-                    val marker = if (name == active) "<green>✔" else "<dark_gray>○"
-                    source.sendMessage(mm.deserialize("  $marker <white>$name"))
+                    if (name == active) {
+                        source.sendText { success("  ✔ $name") }
+                    } else {
+                        source.sendText { secondary("  ○ $name") }
+                    }
                 }
             }
             "get" -> {
-                source.sendMessage(mm.deserialize("<gray>Aktives Profil: <white>${MotdConfig.getConfig().activeProfile}"))
+                source.sendText {
+                    secondary("Aktives Profil: ")
+                    primary(MotdConfig.getConfig().activeProfile)
+                }
             }
             "reload" -> {
                 MotdConfig.reloadFromFile()
-                source.sendMessage(mm.deserialize("<green>Konfiguration erfolgreich neu geladen."))
+                source.sendText {
+                    appendSuccessPrefix()
+                    success("Konfiguration erfolgreich neu geladen.")
+                }
             }
-            else -> source.sendMessage(mm.deserialize("<red>Unbekannter Unterbefehl."))
+            else -> source.sendText {
+                appendErrorPrefix()
+                error("Unbekannter Unterbefehl.")
+            }
         }
     }
 
     override fun hasPermission(invocation: SimpleCommand.Invocation) =
-        invocation.source().hasPermission("nexmotd.admin")
+        invocation.source().hasPermission(PermissionRegistry.COMMAND_MOTD)
 
     override fun suggest(invocation: SimpleCommand.Invocation): List<String> {
         val args = invocation.arguments()
