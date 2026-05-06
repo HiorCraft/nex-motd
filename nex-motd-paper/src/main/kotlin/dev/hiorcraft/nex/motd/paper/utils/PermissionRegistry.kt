@@ -9,4 +9,5 @@ object PermissionRegistry : PermissionRegistry() {
 
     val COMMAND_MOTD = create("$COMMAND_PREFIX.motd")
     val BYPASS_MAINTENANCE = create("$PREFIX.bypass")
+    val BYPASS_VOLL = create("$PREFIX.bypass.voll")
 }

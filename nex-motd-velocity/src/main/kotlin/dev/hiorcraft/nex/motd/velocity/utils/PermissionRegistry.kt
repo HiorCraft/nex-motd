@@ -7,4 +7,5 @@ object PermissionRegistry {
 
     const val COMMAND_MOTD = "$COMMAND_PREFIX.motd"
     const val BYPASS_MAINTENANCE = "$PREFIX.bypass"
+    const val BYPASS_VOLL = "$PREFIX.bypass-voll"
 }
