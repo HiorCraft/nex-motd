@@ -1,9 +1,11 @@
 package dev.hiorcraft.nex.motd.velocity.listener
 
 import com.velocitypowered.api.event.Subscribe
+import dev.hiorcraft.nex.motd.api.MotdProfile
 import com.velocitypowered.api.event.proxy.ProxyPingEvent
 import com.velocitypowered.api.proxy.server.ServerPing
 import com.velocitypowered.api.util.Favicon
+import dev.hiorcraft.nex.motd.velocity.config.MotdConfig
 import dev.hiorcraft.nex.motd.velocity.plugin
 import dev.hiorcraft.nex.motd.velocity.proxy
 import dev.hiorcraft.nex.motd.velocity.service.MotdService
@@ -25,6 +27,13 @@ object ProxyPingListener {
         }
     }
 
+    private fun resolveEffectiveIcon(profile: MotdProfile): String? {
+        val profileIcon = profile.resolveIcon()
+        if (profileIcon != null) return profileIcon
+        val defaults = MotdConfig.getConfig().defaultIcons
+        return if (defaults.isNotEmpty()) defaults.random() else null
+    }
+
     @Subscribe(priority = Short.MAX_VALUE)
     fun onProxyPing(event: ProxyPingEvent) {
         val profile = MotdService.getActiveProfile() ?: return
@@ -34,22 +43,17 @@ object ProxyPingListener {
 
         event.ping = event.ping.asBuilder().apply {
             description(MiniMessage.miniMessage().deserialize(motd))
-            version(
-                ServerPing.Version(
-                    1,
-                    if (!profile.blockJoins) {
-                        proxy.configuration.showMaxPlayers.toString()
-                    } else {
+            if (profile.showVersionString) {
+                version(
+                    ServerPing.Version(
+                        -1,
                         LegacyComponentSerializer.legacySection().serialize(
                             MiniMessage.miniMessage().deserialize(profile.versionString)
                         )
-                    }
+                    )
                 )
-            )
-            if (profile.maxPlayers > 0) {
-                maximumPlayers(profile.maxPlayers)
             }
-            profile.icon?.let { loadFavicon(it) }?.let { favicon(it) }
+            resolveEffectiveIcon(profile)?.let { loadFavicon(it) }?.let { favicon(it) }
         }.build()
     }
 }
