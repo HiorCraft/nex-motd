@@ -24,7 +24,10 @@ class NexMotdVelocityPlugin @Inject constructor(
 
     @Subscribe
     fun onProxyInitialize(event: ProxyInitializeEvent) {
+        dataPath.resolve("icons").toFile().mkdirs()
+        dataPath.resolve("profiles").toFile().mkdirs()
         NexMotdApi.profileManager = MotdService
+        MotdService.getProfiles()
         proxy.channelRegistrar.register(MotdPluginMessageListener.CHANNEL)
         proxy.eventManager.register(this, ProxyPingListener)
         proxy.eventManager.register(this, LoginListener)

@@ -1,6 +1,7 @@
 package dev.hiorcraft.nex.motd.paper.command
 
 import dev.hiorcraft.nex.motd.paper.config.MotdConfig
+import dev.hiorcraft.nex.motd.paper.config.ProfileRepository
 import dev.hiorcraft.nex.motd.paper.plugin
 import dev.hiorcraft.nex.motd.paper.service.MotdService
 import dev.hiorcraft.nex.motd.paper.utils.PermissionRegistry
@@ -81,6 +82,7 @@ fun motdCommand() = commandTree("motd") {
     literalArgument("reload") {
         anyExecutor { executor, _ ->
             MotdConfig.reloadFromFile()
+            ProfileRepository.reload()
             executor.sendText {
                 appendSuccessPrefix()
                 success("Konfiguration erfolgreich neu geladen.")

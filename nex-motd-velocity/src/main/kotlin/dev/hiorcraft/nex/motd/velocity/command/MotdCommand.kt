@@ -2,9 +2,10 @@ package dev.hiorcraft.nex.motd.velocity.command
 
 import com.velocitypowered.api.command.SimpleCommand
 import dev.hiorcraft.nex.motd.velocity.config.MotdConfig
+import dev.hiorcraft.nex.motd.velocity.config.ProfileRepository
 import dev.hiorcraft.nex.motd.velocity.service.MotdService
 import dev.hiorcraft.nex.motd.velocity.utils.PermissionRegistry
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import dev.slne.surf.api.core.messages.adventure.sendText
 
 class MotdCommand : SimpleCommand {
 
@@ -63,6 +64,7 @@ class MotdCommand : SimpleCommand {
             }
             "reload" -> {
                 MotdConfig.reloadFromFile()
+                ProfileRepository.reload()
                 source.sendText {
                     appendSuccessPrefix()
                     success("Konfiguration erfolgreich neu geladen.")

@@ -2,20 +2,23 @@ package dev.hiorcraft.nex.motd.paper
 
 import dev.hiorcraft.nex.motd.api.NexMotdApi
 import dev.hiorcraft.nex.motd.paper.command.motdCommand
+import dev.hiorcraft.nex.motd.paper.listener.LoginListener
 import dev.hiorcraft.nex.motd.paper.listener.ServerListPingListener
+import dev.hiorcraft.nex.motd.paper.config.ProfileRepository
 import dev.hiorcraft.nex.motd.paper.service.MotdService
 import org.bukkit.plugin.java.JavaPlugin
-import java.nio.file.Path
 
 class NexMotdPaperPlugin : JavaPlugin() {
 
-    val dataPath: Path get() = dataFolder.toPath()
-
     override fun onEnable() {
         instance = this
+        dataPath.resolve("icons").toFile().mkdirs()
+        dataPath.resolve("profiles").toFile().mkdirs()
         NexMotdApi.profileManager = MotdService
+        MotdService.getProfiles()
         server.pluginManager.registerEvents(ServerListPingListener, this)
-        motdCommand().register()
+        server.pluginManager.registerEvents(LoginListener, this)
+        motdCommand()
         server.messenger.registerOutgoingPluginChannel(this, "nexmotd:profile")
     }
 
