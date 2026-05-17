@@ -3,9 +3,11 @@ package dev.hiorcraft.nex.motd.velocity.command
 import com.velocitypowered.api.command.SimpleCommand
 import dev.hiorcraft.nex.motd.velocity.config.MotdConfig
 import dev.hiorcraft.nex.motd.velocity.config.ProfileRepository
+import dev.hiorcraft.nex.motd.velocity.proxy
 import dev.hiorcraft.nex.motd.velocity.service.MotdService
 import dev.hiorcraft.nex.motd.velocity.utils.PermissionRegistry
 import dev.slne.surf.api.core.messages.adventure.sendText
+import net.kyori.adventure.text.minimessage.MiniMessage
 
 class MotdCommand : SimpleCommand {
 
@@ -39,6 +41,13 @@ class MotdCommand : SimpleCommand {
                     return
                 }
                 MotdService.setActiveProfile(name)
+                val newProfile = MotdService.getActiveProfile()
+                if (newProfile?.blockJoins == true) {
+                    val kickMessage = MiniMessage.miniMessage().deserialize(newProfile.kickMessage)
+                    proxy.allPlayers
+                        .filter { !it.hasPermission(PermissionRegistry.BYPASS_MAINTENANCE) }
+                        .forEach { it.disconnect(kickMessage) }
+                }
                 source.sendText {
                     appendSuccessPrefix()
                     success("MOTD-Profil gesetzt auf ")
