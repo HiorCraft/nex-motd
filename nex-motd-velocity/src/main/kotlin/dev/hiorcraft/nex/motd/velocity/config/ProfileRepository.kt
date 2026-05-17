@@ -71,11 +71,11 @@ object ProfileRepository {
             variants = mutableListOf(
                 MotdVariant(
                     firstLine = "                  <gradient:#55FF55:#1a5c1a><b>Hexoria Network</b></gradient>",
-                    secondLine = "<dark_gray>        » <green>Erkunde</green> <dark_gray>•</dark_gray><green>Kämpfe</green> <dark_gray>•</dark_gray> <green>Herrsche</green> <dark_gray>«"
+                    secondLine = "<dark_gray>              » <green>Erkunde</green> <dark_gray>•</dark_gray> <green>Chill</green> <dark_gray>•</dark_gray> <green>Spaß</green> <dark_gray>«"
                 ),
                 MotdVariant(
                     firstLine = "                  <gradient:#55FF55:#1a5c1a><b>Hexoria Network</b></gradient>",
-                    secondLine = "                <gray><b>News: <gold>New Parkour"
+                    secondLine = "                 <gray><b>News: <gold>New Update"
                 )
             )
         ),
@@ -88,18 +88,16 @@ object ProfileRepository {
             kickMessage = "<red>Der Server befindet sich aktuell in Wartung. Komm später wieder!"
         ),
         "event" to MotdProfile(
-            firstLine = "<gradient:#FFD700:#FF8C00>✦ NEX-NETWORK EVENT ✦</gradient>",
-            secondLine = "<yellow>» <white>Besonderes Event läuft gerade!</white> «"
+            firstLine = "<gradient:#55FF55:#1a5c1a><b>               ✦ Hexoria Network ✦</gradient>",
+            secondLine = "<dark_purple><b>               Event läuft gerade!"
         ),
         "whitelist" to MotdProfile(
-            firstLine = "<dark_red><b>NEX-NETWORK</b></dark_red> <dark_gray>- <white>Whitelist aktiv</white>",
+            firstLine = "<dark_red><b>HEXORIA-NETWORK</b></dark_red> <dark_gray>- <white>Whitelist aktiv</white>",
             secondLine = "<gray>Nur eingeladene Spieler können beitreten.",
-            versionString = "⚠ Whitelist",
-            showVersionString = true
         ),
         "weekend" to MotdProfile(
-            firstLine = "<gradient:#a8ff78:#78ffd6>✦ NEX-NETWORK WEEKEND ✦</gradient>",
-            secondLine = "<green>» <white>Doppelte XP & Sonderevents!</white> «"
+            firstLine = "<gradient:#55FF55:#1a5c1a><b>               ✦ Hexoria Network ✦</gradient>",
+            secondLine = "<gradient:#FF00C9:#006DF0><b>     » Doppelte XP & Sonderevents! « </gradient>"
         )
     )
 }
