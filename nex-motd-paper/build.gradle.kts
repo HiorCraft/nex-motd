@@ -10,6 +10,8 @@ surfPaperPluginApi {
         registerRequired("LuckPerms")
         registerRequired("MiniPlaceholders")
     }
+
+    authors.add("HiorCraft")
 }
 
 dependencies {

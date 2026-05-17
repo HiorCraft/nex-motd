@@ -4,6 +4,8 @@ plugins {
 
 velocityPluginFile {
     main = "dev.hiorcraft.nex.motd.velocity.NexMotdVelocityPlugin"
+
+    authors.add("HiorCraft")
 }
 
 dependencies {

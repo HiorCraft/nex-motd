@@ -16,12 +16,10 @@ allprojects {
 }
 
 subprojects {
-    afterEvaluate {
-        plugins.withType<PublishingPlugin> {
-            configure<PublishingExtension> {
-                repositories {
-                    slneReleases()
-                }
+    plugins.withType<PublishingPlugin> {
+        configure<PublishingExtension> {
+            repositories {
+                slneReleases()
             }
         }
     }
